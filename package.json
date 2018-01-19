@@ -1,0 +1,28 @@
+{
+    "author": "krtonga",
+    "dependencies": {},
+    "keywords": [],
+    "name": "nolostphone",
+    "pebble": {
+        "displayName": "NoLostPhone",
+        "enableMultiJS": true,
+        "messageKeys": [],
+        "projectType": "native",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk",
+            "diorite",
+            "emery"
+        ],
+        "uuid": "363efba4-9a0c-47fd-ae01-e57378f33302",
+        "watchapp": {
+            "watchface": true
+        }
+    },
+    "version": "1.0.0"
+}
