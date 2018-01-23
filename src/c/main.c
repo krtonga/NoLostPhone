@@ -30,15 +30,16 @@ static void tick_handler(struct tm *time_time, TimeUnits units_changed) {
 }
 
 static void bluetooth_callback(bool connected) {
+  // If connected, show heart and do short vibration
   if (connected) {
     text_layer_set_text(s_connected_indicator, "\U0001F497");
     vibes_short_pulse();  
   } 
+  // If not connected, show poo and do LOOOONG vibration
   else {
     text_layer_set_text(s_connected_indicator, "\U0001F4A9");
-
-    // Vibrate like MAD!!!
-    static const uint32_t const segments[] = { 200, 50, 4000 };
+    
+    static const uint32_t segments[] = { 200, 50, 4000 };
     VibePattern pat = {
       .durations = segments,
       .num_segments = ARRAY_LENGTH(segments),
@@ -47,63 +48,50 @@ static void bluetooth_callback(bool connected) {
   }
 }
 
-// TODO: What's wrong with this method?
-// static void display_text_layer(Layer *window_layer, TextLayer *text_layer, GFont font) {
-//   // Apply layout formatting
-//   text_layer_set_background_color(text_layer, GColorClear);
-//   text_layer_set_text_color(text_layer, GColorBlack);
-//   text_layer_set_font(text_layer, fonts_get_system_font(font));
-//   text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
+
+static void display_text_layer(Layer *window_layer, TextLayer *layer, GFont font) {
+  // Format layer to match watchface
+  text_layer_set_background_color(layer, GColorClear);
+  text_layer_set_text_color(layer, GColorWhite);
+  text_layer_set_font(layer, font);
+  text_layer_set_text_alignment(layer, GTextAlignmentCenter);
   
-//   // Add layer as a child to the Window's root layer
-//   layer_add_child(window_layer, text_layer_get_layer(s_date_layer));
-// }
+  // Add layer to window
+  layer_add_child(window_layer, text_layer_get_layer(layer));
+}
+
 
 static void display_time(Layer *window_layer, GRect bounds) {
-  // Create TextLayer with specific bounds
+  // Create layer of proper size
   s_time_layer = text_layer_create(
       GRect(0, PBL_IF_COLOR_ELSE(60, 54), bounds.size.w, 52));
     
-  // Improve layout to be more like a watchface
-  text_layer_set_background_color(s_time_layer, GColorClear);
-  text_layer_set_text_color(s_time_layer, GColorWhite);
-  text_layer_set_font(s_time_layer, fonts_get_system_font(FONT_KEY_ROBOTO_BOLD_SUBSET_49));
-  text_layer_set_text_alignment(s_time_layer, GTextAlignmentCenter);
-  
-  // Add layer as a child to the Window's root layer
-  layer_add_child(window_layer, text_layer_get_layer(s_time_layer));
+  // Format and display
+  display_text_layer(window_layer, s_time_layer, fonts_get_system_font(FONT_KEY_ROBOTO_BOLD_SUBSET_49));
 }
 
 static void display_date(Layer *window_layer, GRect bounds) {
-  // Create TextLayer with specific bounds
+  // Create layer of proper size
   s_date_layer = text_layer_create(
       GRect(0, PBL_IF_COLOR_ELSE(38, 32), bounds.size.w, 30));
     
-  // Improve layout to be more like a watchface
-  text_layer_set_background_color(s_date_layer, GColorClear);
-  text_layer_set_text_color(s_date_layer, GColorWhite);
-  text_layer_set_font(s_date_layer, fonts_get_system_font(FONT_KEY_ROBOTO_CONDENSED_21));
-  text_layer_set_text_alignment(s_date_layer, GTextAlignmentCenter);
-  
-  // Add layer as a child to the Window's root layer
-  layer_add_child(window_layer, text_layer_get_layer(s_date_layer));
+  // Format and display
+  display_text_layer(window_layer, s_date_layer, fonts_get_system_font(FONT_KEY_ROBOTO_CONDENSED_21));
 }
 
 static void display_connected_indicator(Layer *window_layer, GRect bounds) {
-  // Create TextLayer with specific bounds
-  // TODO How do these pixels work?
+  // TODO How do these pixels actually work?
   s_connected_indicator = text_layer_create(
       GRect(0, PBL_IF_COLOR_ELSE(118, 112), bounds.size.w, 110));
   
-  // Improve layout to be more like a watchface
-  text_layer_set_background_color(s_connected_indicator, GColorClear);
-  text_layer_set_text_color(s_connected_indicator, GColorWhite);
-  text_layer_set_font(s_connected_indicator, fonts_get_system_font(FONT_KEY_GOTHIC_28));
-  text_layer_set_text_alignment(s_connected_indicator, GTextAlignmentCenter);
+  // Set initial bluetooth icon on watchface
+  text_layer_set_text(s_connected_indicator, connection_service_peek_pebble_app_connection() 
+                      ? "\U0001F497" : "\U0001F4A9");
   
-  // Add layer as a child to the Window's root layer
-  layer_add_child(window_layer, text_layer_get_layer(s_connected_indicator));
+  // Format and display
+  display_text_layer(window_layer, s_connected_indicator, fonts_get_system_font(FONT_KEY_GOTHIC_28));
 }
+
 
 static void main_window_load(Window *window) {
   // Get info about the Window
@@ -114,16 +102,14 @@ static void main_window_load(Window *window) {
   display_time(window_layer, bounds);
   display_date(window_layer, bounds);
   display_connected_indicator(window_layer, bounds);
-  
-  // Initialize connected indicator
-  bluetooth_callback(connection_service_peek_pebble_app_connection());
 }
 
 static void main_window_unload(Window *window) {
-  // Destory TextLayers
+  // Give memory back to system when window is destroyed
   text_layer_destroy(s_time_layer);
   text_layer_destroy(s_date_layer);
 }
+
 
 static void init() {
   // Register with TickTimerService for time
@@ -157,6 +143,7 @@ static void deinit() {
   // Give memory back to system when app exists
   window_destroy(s_main_window);
 }
+
 
 int main(void) {
   init();
