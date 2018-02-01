@@ -17,8 +17,8 @@ static void update_time() {
                                   "%H:%M" : "%I:%M", tick_time);
   
   // Write current date into buffer
-  static char s_date_buffer[11];
-  strftime(s_date_buffer, sizeof(s_date_buffer), "%B %d", tick_time);
+  static char s_date_buffer[12];
+  strftime(s_date_buffer, sizeof(s_date_buffer), "%B %e", tick_time);
   
   // Display time on TextLayer
   text_layer_set_text(s_time_layer, s_time_buffer);
