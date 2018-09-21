@@ -1,0 +1,36 @@
+{
+    "targetPlatforms": [
+        "aplite", 
+        "basalt", 
+        "chalk", 
+        "diorite", 
+        "emery"
+    ], 
+    "projectType": "native", 
+    "name": "nolostphone", 
+    "messageKeys": {}, 
+    "companyName": "krtonga", 
+    "enableMultiJS": true, 
+    "versionLabel": "1.2", 
+    "capabilities": [], 
+    "sdkVersion": "3", 
+    "appKeys": {}, 
+    "longName": "NoLostPhone", 
+    "displayName": "NoLostPhone", 
+    "shortName": "NoLostPhone", 
+    "watchapp": {
+        "watchface": true
+    }, 
+    "resources": {
+        "media": [
+            {
+                "menuIcon": true, 
+                "type": "bitmap", 
+                "targetPlatforms": null, 
+                "file": "images/ic_menu", 
+                "name": "IC_MENU"
+            }
+        ]
+    }, 
+    "uuid": "363efba4-9a0c-47fd-ae01-e57378f33302"
+}
